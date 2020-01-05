@@ -1,2 +1,2 @@
-FLASK_APP=bvb02.py
+FLASK_APP=diskfiles.py
 FLASK_DEBUG=0
