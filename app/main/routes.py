@@ -1,12 +1,11 @@
 from datetime import datetime
+import os
+
 from flask import render_template, current_app
 from flask_login import current_user, login_required
 
 from app import db
 from app.main import bp
-
-import subprocess
-import os
 
 
 @bp.before_app_request
@@ -37,17 +36,18 @@ def index():
 
 @bp.route('/vol')
 def vol():
-    current_app.logger.info('vol')
+    current_app.logger.info("Enter: main/vol")
     volCmd = "vol e:"
+        # todo os.system execution echos Stdout system command output 
     volData = os.system(volCmd)
     if (volData == 0):
         stream = os.popen(volCmd)
-        volName = stream.readline()
-        volSerialNumber = stream.readline()
-        print("volume: ", volName)
-        print("Serial: ", volSerialNumber)
-        return render_template('main/vol.html', volName=volName, volSerialNumber=volSerialNumber)
+        volName = stream.readline()[22:].rstrip('\n ')
+        volSerialNumber = stream.readline()[25:].rstrip('\n ')
+        current_app.logger.info\
+            ("main/vol Volume info: Serial: " + volSerialNumber + ", Name: " + volName)
+        return render_template\
+            ('main/vol.html', volName=volName, volSerialNumber=volSerialNumber)
     else:
-        no_data = "No disk data"
-        print(no_data)
-        return render_template('main/vol.html', volName=no_data)
+        current_app.logger.info("main/vol Device not ready or no volume data")
+        return render_template('main/vol.html', volName="No disk data")
