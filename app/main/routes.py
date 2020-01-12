@@ -19,22 +19,13 @@ def before_request():
 @bp.route('/index')
 @login_required
 def index():
-    current_app.logger.info('index')
-    posts = [
-        {
-            'author': {'username': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        }
-    ]
+    current_app.logger.info('Enter main/index')
 
-    return render_template('main/index.html', admin_type=current_user.admin_type,  posts=posts)
+    return render_template('main/index.html', admin_type=current_user.admin_type)
 
 
 @bp.route('/vol')
+@login_required
 def vol():
     current_app.logger.info("Enter: main/vol")
     volCmd = "vol e:"

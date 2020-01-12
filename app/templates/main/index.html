@@ -1,10 +1,17 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <h1>Hi, {{ current_user.username }}!</h1>
-    {% for post in posts %}
-        {% include '_post.html' %}
-    {% endfor %}
+    <div class="container">
+        <h2>Menu</h2>
+        <div class="list-group">
+            <a href="#"\
+                class="list-group-item list-group-item-action disabled">Scan disk(s)</a>
+            <a href="#"\
+                class="list-group-item list-group-item-action disabled">Search disk file catalog</a>
+            <a href="{{ url_for('main.vol') }}"\
+                class="list-group-item list-group-item-action">Volume Information</a>
+        </div>
+      </div>
     <br>
     {% if admin_type == "admin" %}
         <a href="{{ url_for('auth.admin') }}">Administrator Functions</a>
