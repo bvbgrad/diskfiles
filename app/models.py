@@ -17,7 +17,6 @@ class User(UserMixin, db.Model):
     admin_type = db.Column(db.String(20), default="none")
     password_hash = db.Column(db.String(128))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
-    posts = db.relationship('Post', backref='author', lazy='dynamic')
 
     def __repr__(self):
         return '<Username {}, email: {}, Admin type: {}>'\
@@ -44,15 +43,3 @@ class User(UserMixin, db.Model):
 def load_user(user_id):
     """ Check if user is logged-in on every page load """
     return User.query.get(int(user_id))
-
-
-class Post(db.Model):
-    """ hold over from microblog example """
-    # TODO remove all Microblog "Post" code
-    id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.String(140))
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def __repr__(self):
-        return '<Post {}>'.format(self.body)
