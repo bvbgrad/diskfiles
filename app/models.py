@@ -13,10 +13,10 @@ class User(UserMixin, db.Model):
     """ User object """
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
     admin_type = db.Column(db.String(20), default="none")
-    password_hash = db.Column(db.String(128))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    email = db.Column(db.String(120), index=True, unique=True)
+    password_hash = db.Column(db.String(128))
 
     def __repr__(self):
         return '<Username {}, email: {}, Admin type: {}>'\
