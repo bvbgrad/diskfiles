@@ -28,17 +28,17 @@ def index():
 @login_required
 def vol():
     current_app.logger.info("Enter: main/vol")
-    volCmd = "vol e:"
-        # todo os.system execution echos Stdout system command output 
-    volData = os.system(volCmd)
-    if (volData == 0):
-        stream = os.popen(volCmd)
-        volName = stream.readline()[22:].rstrip('\n ')
-        volSerialNumber = stream.readline()[25:].rstrip('\n ')
-        current_app.logger.info\
-            ("main/vol Volume info: Serial: " + volSerialNumber + ", Name: " + volName)
-        return render_template\
-            ('main/vol.html', volName=volName, volSerialNumber=volSerialNumber)
+    vol_cmd = "vol e:"
+    # todo os.system execution echos Stdout system command output
+    vol_data = os.system(vol_cmd)
+    if vol_data == 0:
+        stream = os.popen(vol_cmd)
+        vol_name = stream.readline()[22:].rstrip('\n ')
+        vol_serial_number = stream.readline()[25:].rstrip('\n ')
+        current_app.logger.info(
+            "main/vol Volume info: Serial: " + vol_serial_number + ", Name: " + vol_name)
+        return render_template(
+            'main/vol.html', volName=vol_name, volSerialNumber=vol_serial_number)
     else:
         current_app.logger.info("main/vol Device not ready or no volume data")
         return render_template('main/vol.html', volName="No disk data")
