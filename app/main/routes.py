@@ -1,3 +1,6 @@
+"""
+    Routes for Main application
+"""
 from datetime import datetime
 import os
 
@@ -36,17 +39,36 @@ def vol():
     """
         stub route to test disk vol command
     """
-    current_app.logger.info("Enter: main/vol")
-    vol_cmd = "vol e:"
-    vol_data = os.system(vol_cmd)
-    if vol_data != 0: # disk read failure
-        current_app.logger.info("main/vol Device not ready or no volume data")
+    volume_info = __vol_info__('e:')
+    if len(volume_info) == 0:
         return render_template('main/vol.html', volName="No disk data")
 
-    stream = os.popen(vol_cmd) # os.popen execution echos system command output to stdout
-    vol_name = stream.readline()[22:].rstrip('\n ')
-    vol_serial_number = stream.readline()[25:].rstrip('\n ')
-    current_app.logger.info(
-        "main/vol Volume info: Serial: " + vol_serial_number + ", Name: " + vol_name)
+    disk_files = []
+    disk_files.append(("serial number", "volume name", "file name"))
+    disk_files.append((volume_info["serial_number"], volume_info["name"], "file 1"))
+    disk_files.append((volume_info["serial_number"], volume_info["name"], "file 2"))
+
     return render_template(
-        'main/vol.html', volName=vol_name, volSerialNumber=vol_serial_number)
+        'main/vol.html', disk_files=disk_files,
+        volName=volume_info["name"],
+        volSerialNumber=volume_info["serial_number"])
+
+
+def __vol_info__(volume_letter):
+    current_app.logger.info("Enter: main/__vol_info__")
+    vol_cmd = "vol " + volume_letter
+    vol_data = os.system(vol_cmd)
+    if vol_data != 0: # disk read failure
+        volume_info = {}
+        current_app.logger.info("main/vol Device not ready or no volume data")
+    else:
+        stream = os.popen(vol_cmd) # os.popen execution echos system command output to stdout
+        vol_name = stream.readline()[22:].rstrip('\n ')
+        vol_serial_number = stream.readline()[25:].rstrip('\n ')
+        volume_info = {"name":vol_name, "serial_number":vol_serial_number}
+        current_app.logger.info(
+            "main/__vol_info__: Volume info: " +
+            "Serial: " + volume_info["serial_number"] +
+            ", Name: " + volume_info["name"])
+
+    return volume_info
