@@ -5,28 +5,29 @@
     {{ volSerialNumber }} <br>
     {{ volName }} <br>
 
-    <div class="container">
-        <h4>File list</h4>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-                <th>index</th>
-                {% for header in disk_files[0] %}
-                    <th>{{ header }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for file in disk_files[1:] %}
+    {% if disk_files %}
+        <div class="container">
+            <h4>File list</h4>
+            <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td>{{ loop.index }}</td>
-                    {% for element in file %}
-                        <td>{{ element }}</td>
+                    <th>index</th>
+                    {% for header in disk_files[0] %}
+                        <th>{{ header }}</th>
                     {% endfor %}
                 </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      
+            </thead>
+            <tbody>
+                {% for file in disk_files[1:] %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        {% for element in file %}
+                            <td>{{ element }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+    {% endif %}
 {% endblock %}
