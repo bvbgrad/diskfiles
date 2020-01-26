@@ -76,19 +76,22 @@ def __create_disk_list__(current_dir):
     current_app.logger.info("Enter: main/__create_disk_list__ from volume: " + current_dir)
 
     disk_files = []
-    disk_files.append(("Path", "Size", "Created"))
+    disk_files.append(("Path", "Name", "Size", "Timestamp", "Created"))
+    # disk_files.append(("Path", "Name", "Size", "Timestamp"))
 
     current_path = Path(current_dir)
     for path in sorted(current_path.rglob('*')):
         if path.is_file():
-            filepath = path.drive / path.parent / path.name
-            filename = str(filepath)[2:] # get rid of drive letter
-            created = datetime.fromtimestamp(path.stat().st_ctime)
-            disk_files.append((filename, path.stat().st_size,\
-                            f"{created:%Y%m%d-%H:%M:%S}"))
-        else:
+            filepath = path.parent
+            filepath = '\\' + str(filepath)[2:] # add root but get rid of drive letter
+            filename = path.name
+            ctime = path.stat().st_ctime
+            created = datetime.fromtimestamp(ctime)
+            disk_files.append((filepath, filename, path.stat().st_size, ctime, created))
+            # disk_files.append((filepath, filename, path.stat().st_size, ctime))
+                            # f"{created:%Y%m%d-%H:%M:%S}", ctime))
+        # else:
             # print(path.name)
-            pass
 
     current_app.logger.info(
         f"Exit: main/__create_disk_list__ found {len(disk_files) - 1} files")
