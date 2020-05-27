@@ -1,7 +1,11 @@
-from datetime import datetime
+"""
+    Routes for Main application
+"""
 import os
+from datetime import datetime
+from pathlib import Path
 
-from flask import render_template, current_app
+from flask import current_app, render_template
 from flask_login import current_user, login_required
 
 from app import db
@@ -36,17 +40,59 @@ def vol():
     """
         stub route to test disk vol command
     """
-    current_app.logger.info("Enter: main/vol")
-    vol_cmd = "vol e:"
-    vol_data = os.system(vol_cmd)
-    if vol_data != 0: # disk read failure
-        current_app.logger.info("main/vol Device not ready or no volume data")
+    volume_letter = 'E:'
+    volume_info = __vol_info__(volume_letter)
+    if len(volume_info) == 0:
         return render_template('main/vol.html', volName="No disk data")
 
-    stream = os.popen(vol_cmd) # os.popen execution echos system command output to stdout
-    vol_name = stream.readline()[22:].rstrip('\n ')
-    vol_serial_number = stream.readline()[25:].rstrip('\n ')
-    current_app.logger.info(
-        "main/vol Volume info: Serial: " + vol_serial_number + ", Name: " + vol_name)
+    disk_files = __create_disk_list__(volume_letter)
     return render_template(
-        'main/vol.html', volName=vol_name, volSerialNumber=vol_serial_number)
+        'main/vol.html', disk_files=disk_files,
+        volName=volume_info["name"],
+        volSerialNumber=volume_info["serial_number"])
+
+
+def __vol_info__(volume_letter):
+    current_app.logger.info("Enter: main/__vol_info__")
+    vol_cmd = "vol " + volume_letter
+    vol_data = os.system(vol_cmd)
+    if vol_data != 0: # disk read failure
+        volume_info = {}
+        current_app.logger.info("main/vol Device not ready or no volume data")
+    else:
+        stream = os.popen(vol_cmd) # os.popen execution echos system command output to stdout
+        vol_name = stream.readline()[22:].rstrip('\n ')
+        vol_serial_number = stream.readline()[25:].rstrip('\n ')
+        volume_info = {"name":vol_name, "serial_number":vol_serial_number}
+        current_app.logger.info(
+            "main/__vol_info__: Volume info: " +
+            "Serial: " + volume_info["serial_number"] +
+            ", Name: " + volume_info["name"])
+
+    return volume_info
+
+
+def __create_disk_list__(current_dir):
+    current_app.logger.info("Enter: main/__create_disk_list__ from volume: " + current_dir)
+
+    disk_files = []
+    disk_files.append(("Path", "Name", "Size", "Timestamp", "Created"))
+    # disk_files.append(("Path", "Name", "Size", "Timestamp"))
+
+    current_path = Path(current_dir)
+    for path in sorted(current_path.rglob('*')):
+        if path.is_file():
+            filepath = path.parent
+            filepath = '\\' + str(filepath)[2:] # add root but get rid of drive letter
+            filename = path.name
+            ctime = path.stat().st_ctime
+            created = datetime.fromtimestamp(ctime)
+            disk_files.append((filepath, filename, path.stat().st_size, ctime, created))
+            # disk_files.append((filepath, filename, path.stat().st_size, ctime))
+                            # f"{created:%Y%m%d-%H:%M:%S}", ctime))
+        # else:
+            # print(path.name)
+
+    current_app.logger.info(
+        f"Exit: main/__create_disk_list__ found {len(disk_files) - 1} files")
+    return disk_files
