@@ -38,7 +38,7 @@ def create_app(config_class=Config):
     if not app.debug and not app.testing:
         if not os.path.exists('logs'):
             os.mkdir('logs')
-        file_handler = RotatingFileHandler('logs/stubapp.log', maxBytes=10240,
+        file_handler = RotatingFileHandler('logs/diskfiles.log', maxBytes=10240,
                                            backupCount=10)
         # todo rotating log file backup creates fragmented log files
         file_handler.setFormatter(logging.Formatter(
@@ -48,7 +48,7 @@ def create_app(config_class=Config):
 
         # todo make logging level a configuration parameter
         app.logger.setLevel(logging.INFO)
-        app.logger.info('StubApp startup')
+        app.logger.info('Disk Catalog startup')
     return app
 
 
